@@ -38,9 +38,11 @@ m <- function(x) dollar(x, scale = 1e-6, suffix = "M", accuracy = 0.1)
 Smart home equipment manufacturers spend millions each year on dealer incentives—co-op marketing, tier discounts, and field support—guided largely by the industry’s published Top 100 ranking. SignalPath Consulting Group was engaged to answer a fundamental question for FY2027 planning: Is a voluntary, self-reported ranking robust enough to drive channel allocation, and if not, what should replace it?
 
 **The Client & Context**
-The client is a composite of high-end smart home manufacturers producing control systems, AV, networking, and lighting gear. *(Alex: confirm keeping "composite" or substituting a specific engagement name.)* Because products reach homeowners strictly through thousands of independent, owner-operated custom integration firms, allocating channel budgets accurately is central to their go-to-market strategy.
+
+The client is a hypothetical firm, representative of high-end smart home manufacturers producing control systems, AV, networking, and lighting gear. Because products reach homeowners strictly through thousands of independent, owner-operated custom integration firms, allocating channel budgets accurately is central to their go-to-market strategy.
 
 **The Measurement Problem**
+
 The issue isn't publisher error or bad intent; it's structural sampling bias. Treating a voluntary opt-in list as a complete market census is a known analytical trap. Assuming the ranking is compiled honestly, we test its structural integrity using three metrics:
 
 -   **Composition:** Comparing same-store median growth (firms listed in consecutive years) against list-level median changes. Divergence indicates the list is measuring survey participation rather than market growth.
@@ -50,6 +52,7 @@ The issue isn't publisher error or bad intent; it's structural sampling bias. Tr
 -   **Selection:** Comparing listed firms against former listees and never-listed peers using size distributions and revenue per employee to surface hidden bias.
 
 **Data & Sources**
+
 The study evaluates two firm-level datasets spanning 2009 through 2026:
 
 -   **The Top 100 Dataset:** 18 years of published rankings, cleaned and reconciled for mergers, name changes, and print corrections.
@@ -57,10 +60,12 @@ The study evaluates two firm-level datasets spanning 2009 through 2026:
 -   **The Market Population:** An independent dataset built from buying-group rosters, national certification directories, company websites, and public business records to capture all qualifying integrators regardless of survey participation.
 
 **Working Hypothesis**
+
 The Top 100 is a strong directory and a weak denominator. It works well for locating prominent leads, but it is unreliable for sizing the total market, tracking real growth, or benchmarking dealer tiers.
 
 **Deliverables**
-Designed for sales executives, buying-group leaders, and trade analysts, the project delivers a one-page executive summary, clear comparative charts, and a presentation deck—backed by a fully audited R Markdown notebook and data-cleaning log for full verification.
+
+Designed for sales executives, buying-group leaders, and trade analysts, the project delivers a fully audited R Markdown notebook and data-cleaning log for full verification.
 
 # 2. Sourcing and Preparing the Data
 
@@ -131,6 +136,7 @@ Most portfolio write-ups gloss over data cleaning, but skipping it here breaks t
 -   **Revenue Bins:** Grouped every row into fixed buckets (Under \$1M, \$1–2M, up to \$25M+). Used the exact same bins for unlisted companies in Test 3 to keep comparisons direct.
 
 **Identity Resolution (The Hard Part)**
+
 Companies rebrand, merge, get acquired, or drop off and return years later. Cross-year matching relied on three layers:
 
 1.  **Normalized Name Keys:** Stripped case, punctuation, legal suffixes (`Inc`, `LLC`), and `DBA` titles.
@@ -185,6 +191,7 @@ rows %>%
 # 4. Data Analysis: Three Key Tests
 
 **Dataset Setup**
+
 The 1,807 rows were reshaped for three distinct tests:
 
 -   **List-level stats:** Grouped by publication year.

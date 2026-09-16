@@ -15,17 +15,19 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width =
 library(tidyverse)
 library(scales)
 # Every table and chart below regenerates from the CSVs in data/. Nothing reaches back into private files.
-rows  <- read_csv("data/cepro100_2009_2026_rows.csv")
-A1    <- read_csv("data/A1_list_level_stats_by_year.csv")
-A2    <- read_csv("data/A2_same_store_vs_list_level_growth.csv")
-A3    <- read_csv("data/A3_persistent_cohort_series.csv")
-A4    <- read_csv("data/A4_entry_exit_by_year.csv")
-A5    <- read_csv("data/A5_size_bands_by_year.csv")
-A6    <- read_csv("data/A6_years_on_list_distribution.csv")
-A7    <- read_csv("data/A7_status_of_every_firm_ever_listed.csv")
-B1    <- read_csv("data/B1_reconstructed_landscape_by_population.csv")
-B2    <- read_csv("data/B2_firms_above_size_thresholds.csv")
-B3    <- read_csv("data/B3_size_distribution_listed_vs_unlisted.csv")
+# On Kaggle the same files are attached as a dataset; everywhere else they sit in data/ beside this file.
+d <- if (dir.exists("/kaggle/input")) list.dirs("/kaggle/input", recursive = FALSE)[1] else "data"
+rows  <- read_csv(file.path(d, "cepro100_2009_2026_rows.csv"))
+A1    <- read_csv(file.path(d, "A1_list_level_stats_by_year.csv"))
+A2    <- read_csv(file.path(d, "A2_same_store_vs_list_level_growth.csv"))
+A3    <- read_csv(file.path(d, "A3_persistent_cohort_series.csv"))
+A4    <- read_csv(file.path(d, "A4_entry_exit_by_year.csv"))
+A5    <- read_csv(file.path(d, "A5_size_bands_by_year.csv"))
+A6    <- read_csv(file.path(d, "A6_years_on_list_distribution.csv"))
+A7    <- read_csv(file.path(d, "A7_status_of_every_firm_ever_listed.csv"))
+B1    <- read_csv(file.path(d, "B1_reconstructed_landscape_by_population.csv"))
+B2    <- read_csv(file.path(d, "B2_firms_above_size_thresholds.csv"))
+B3    <- read_csv(file.path(d, "B3_size_distribution_listed_vs_unlisted.csv"))
 m <- function(x) dollar(x, scale = 1e-6, suffix = "M", accuracy = 0.1)
 ```
 

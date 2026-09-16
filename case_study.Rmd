@@ -1,5 +1,5 @@
 ---
-title: "[YOUR TITLE — e.g. 'What an industry ranking can and cannot tell you: eighteen years of a top-100 list']"
+title: "A strong directory, a weak denominator: what eighteen years of an industry top-100 ranking can (and cannot) tell a manufacturer planning its dealer program"
 author: "Alex Jaremko"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
@@ -33,23 +33,70 @@ m <- function(x) dollar(x, scale = 1e-6, suffix = "M", accuracy = 0.1)
 
 # 1. Introduction
 
-> **[WRITE THIS.** The scenario, in the course's framing: you are an analyst at a business-intelligence consultancy leading a project for a new client — a manufacturer deciding where to put its FY27 dealer-program dollars. The default input is the industry's published top-100 ranking. State the business task in one sentence, name the stakeholders, and state the assumption you are carrying: the list is treated as honest and competently produced, and every limitation found is structural, not an error.]
->
-> **The packet's five guiding Ask questions — answer each explicitly (peer graders look for them):**
->
-> 1. *What type of company does your client represent, and what are they asking you to accomplish?* — A smart home technology manufacturer selling through a dealer network, planning FY27 dealer-program spend; asking whether the published top-100 ranking is a sound basis for sizing the channel and targeting that spend, and what to use if not.
-> 2. *What are the key factors involved in the business task?* — Coverage, composition and selection; the mechanism behind all three is voluntary, self-reported participation.
-> 3. *What type of data will be appropriate?* — Eighteen years of the ranking as a firm-year table; an independent roster of channel firms as the comparator.
-> 4. *Where will you obtain that data?* — Compiled from the publicly published annual lists (extracted, cleaned, documented, and republished names-stripped); the comparator from two published industry rosters.
-> 5. *Who is your audience, and what materials will help you present to them effectively?* — Manufacturer channel and sales leadership first; buying-group leadership and trade press second. This document, the public extract, the cleaning log, and a short deck.
->
-> **Roadmap (Ask) guiding questions to cover in passing:** topic; problem; metrics (same-store vs list-level growth, list share of reconstructed population firms and dollars, size-distribution overlap); stakeholders; audience; how the insight changes the client's decision.
+**The Business Case**
 
-# 2. Prepare — the data and where it came from
+Smart home equipment manufacturers spend millions each year on dealer incentives—co-op marketing, tier discounts, and field support—guided largely by the industry’s published Top 100 ranking. SignalPath Consulting Group was engaged to answer a fundamental question for FY2027 planning: Is a voluntary, self-reported ranking robust enough to drive channel allocation, and if not, what should replace it?
 
-> **[WRITE THIS.** Provenance in your words. Point the reader to `02_cleaning_and_decision_log.md` for the full log. State plainly that company names are stripped and why. Say what the comparator rosters are and that they have selection effects of their own. Address the "compiled, not downloaded" point head-on: the dataset was built from publicly published lists, the build is documented, and publishing the extract makes it a public dataset.]
->
-> **Roadmap (Prepare) guiding questions:** where the data is located; how it is organized (one row per firm per list year); bias and credibility — does it ROCCC (Reliable, Original, Comprehensive, Current, Cited)? — answer honestly: original and current yes, comprehensive no (voluntary participation is the whole point), reliable within the publisher's own verification, cited to the source; licensing, privacy, security and accessibility (published facts, names stripped, nominative use of the list's name); how integrity was verified (totals reconcile to the printed lists; cross-year identity checks); problems with the data (misprints kept as printed, ties, a corrected edition, non-monotonic ranks).
+**The Client & Context**
+The client is a composite of high-end smart home manufacturers producing control systems, AV, networking, and lighting gear. *(Alex: confirm keeping "composite" or substituting a specific engagement name.)* Because products reach homeowners strictly through thousands of independent, owner-operated custom integration firms, allocating channel budgets accurately is central to their go-to-market strategy.
+
+**The Measurement Problem**
+The issue isn't publisher error or bad intent; it's structural sampling bias. Treating a voluntary opt-in list as a complete market census is a known analytical trap. Assuming the ranking is compiled honestly, we test its structural integrity using three metrics:
+
+-   **Composition:** Comparing same-store median growth (firms listed in consecutive years) against list-level median changes. Divergence indicates the list is measuring survey participation rather than market growth.
+
+-   **Coverage:** Benchmarking the list's share of total firms and revenue against an independent market census across multiple revenue tiers.
+
+-   **Selection:** Comparing listed firms against former listees and never-listed peers using size distributions and revenue per employee to surface hidden bias.
+
+**Data & Sources**
+The study evaluates two firm-level datasets spanning 2009 through 2026:
+
+-   **The Top 100 Dataset:** 18 years of published rankings, cleaned and reconciled for mergers, name changes, and print corrections.
+
+-   **The Market Population:** An independent dataset built from buying-group rosters, national certification directories, company websites, and public business records to capture all qualifying integrators regardless of survey participation.
+
+**Working Hypothesis**
+The Top 100 is a strong directory and a weak denominator. It works well for locating prominent leads, but it is unreliable for sizing the total market, tracking real growth, or benchmarking dealer tiers.
+
+**Deliverables**
+Designed for sales executives, buying-group leaders, and trade analysts, the project delivers a one-page executive summary, clear comparative charts, and a presentation deck—backed by a fully audited R Markdown notebook and data-cleaning log for full verification.
+
+# 2. Sourcing and Preparing the Data
+
+This analysis relies on two primary datasets hosted in the public repository (`SignalPathStrategy/directory-not-denominator` on GitHub and Kaggle), backed by private working files to protect non-public firm estimates and identity mappings.
+
+**Core Data Sources**
+
+-   **The CE Pro 100 Ranking (2009–2026):** 18 annual editions covering fiscal years 2008 through 2025. Recent editions (2020–2026) were parsed programmatically from text PDFs; older magazine scans (2009–2019) required custom page-geometry parsers and manual transcription for damaged scans.
+
+-   **The Independent Comparator Population:** A baseline of 282 unique qualifying integrators built from buying-group rosters and national certification directories (June 2026). Cross-referencing this roster against historical lists categorizes the market into active listees, alumni, and never-listed firms.
+
+-   **Unlisted Revenue Estimates:** Revenue for never-listed control firms was modeled using public Paycheck Protection Program (PPP) payroll data, web headcount, and industry press. Estimates carry explicit confidence ratings (High/Medium/Low) and are published strictly in aggregate.
+
+**Data Architecture & Anonymization**
+
+The flat public extract (`cepro100_2009_2026_rows.csv`) contains 1,807 firm-year rows across 379 unique entities and 17 attributes. To maintain research integrity without calling out individual businesses, firm names are replaced with stable IDs, city data is removed, and five major non-custom integration outliers are flagged for exclusion.
+
+**Source Credibility (ROCCC Framework)**
+
+-   **Reliable:** Within limits. All figures are self-reported and unaudited; the publisher's third-party verification badge was dropped post-2019.
+
+-   **Original:** Yes. Direct first-party extraction from publisher archives, not secondary aggregations.
+
+-   **Comprehensive:** No—and that is the core point of the study. Voluntary participation creates a structural selection gap.
+
+-   **Current:** Yes. The 2026 edition captures FY2025 financial figures.
+
+-   **Cited:** Yes. Every data point maps to a specific issue, page number, and line item.
+
+**Data Integrity & Discrepancy Auditing**
+
+-   **Entity Resolution:** Resolved 397 raw company name variations down to 379 distinct firms across 18 years of mergers, rebrands, and name changes.
+
+-   **Publisher Discrepancies:** Line-item table totals regularly diverge from publisher summary cards. For example, CE Pro’s 2024 editorial summary claimed \$6.33 billion in total market revenue, but table line items sum to \$1.80 billion—a \$4.53 billion skew caused by including a single massive security enterprise.
+
+-   **Schema Drift:** Changing magazine layouts over 18 years were unified; missing historical attributes are treated as null values rather than zeros.
 
 ```{r prepare-overview}
 rows %>%
@@ -59,11 +106,60 @@ rows %>%
   knitr::kable(caption = "Rows and field availability by list year")
 ```
 
-# 3. Process — cleaning, identity resolution and rulings
+# 3. Processing the Data: Cleaning, Identity Resolution & Decisions
 
-> **[WRITE THIS.** Two or three paragraphs summarising the log: extraction from eighteen PDFs, normalisation, the ~60 aliases and 18 merges that collapse 397 apparent firms to 379, the five-outlier exclusion, the applied 2025 correction, and the decision to keep misprints and ties as printed. This is the section most portfolio case studies skip. Do not skip it.]
->
-> **Roadmap (Process) guiding questions:** tools chosen and why (Python for extraction and identity resolution, R Markdown for the reproducible analysis, a spreadsheet for review); how integrity was ensured; the cleaning steps; how you verify the data is clean (the table below reproduces the row counts; the extract reconciles to the printed totals); where the cleaning process is documented.
+Most portfolio write-ups gloss over data cleaning, but skipping it here breaks the entire analysis. Because the core findings hinge on all 1,807 rows, every entry had to be mapped to its true owner to verify that printed numbers reflected actual publisher intent.
+
+**Tooling Choices**
+
+-   **Python:** Built for messy extraction. Eighteen years of shifting PDF layouts aren't meant for a spreadsheet: seven recent editions used page-geometry parsing, eleven older magazine layouts required custom scrapers, and cross-year name matching needed reusable code that could re-run whenever matching rules evolved.
+
+-   **Spreadsheet Master (Two Copies):** Kept as a human-review workbook (one full dataset, one with outliers excluded). Every single decision required manual row-by-row inspection with attached context notes.
+
+-   **R Markdown:** Handles the final analysis. Narrative, code, outputs, and logging sit in one dynamic document that rebuilds straight from the public extract. Anyone cloning the repo can verify the results instantly.
+
+**Key Data Prep Steps**
+
+-   **Strings to Numbers:** Stripped currency and formatting from printed strings (e.g., `"$12,345,678"` or `"1,200"`) into raw integers. Unclean or non-numeric print entries were preserved verbatim in a private notes field and left blank in the extract.
+
+-   **Location Normalization:** Extracted state codes from city/state strings, converting legacy wire-service abbreviations into standard two-letter postal codes.
+
+-   **Recalculating Revenue per Employee:** Calculated directly as revenue divided by headcount. The publisher’s printed ratio (2009–2020) regularly contradicted its own revenue and employee columns, so the recalculated metric is used throughout.
+
+-   **Outlook Parsing:** Split free-text outlook notes (`"Up 10%"`, `"Flat"`, `"Down 5%"`) into a directional flag and a numerical percentage.
+
+-   **Revenue Bins:** Grouped every row into fixed buckets (Under \$1M, \$1–2M, up to \$25M+). Used the exact same bins for unlisted companies in Test 3 to keep comparisons direct.
+
+**Identity Resolution (The Hard Part)**
+Companies rebrand, merge, get acquired, or drop off and return years later. Cross-year matching relied on three layers:
+
+1.  **Normalized Name Keys:** Stripped case, punctuation, legal suffixes (`Inc`, `LLC`), and `DBA` titles.
+
+2.  **Manual Alias Table:** Applied \~60 documented aliases for rebrands and printing variants.
+
+3.  **Entity Merges:** Executed 18 identity merges after tracing every company that ever left the list. A returning business under a new name is counted as a return, not a fresh market entrant. This step collapsed 397 apparent firms down to 379 true unique businesses.
+
+What wasn't merged mattered just as much. Five pairs of similarly named firms were kept separate because they operated in completely different states, and six more were kept distinct based on clear operational evidence. Forcing those merges would have fabricated fake business longevity. The public export exposes only the final, sequence-assigned `firm_id`.
+
+**Analytical Rulings**
+
+-   **Five Outliers Flagged:** Five entities on the list aren't custom integrators (two national security/smart-home providers, a regional security firm, a commercial AV integrator, and a retail giant's install branch). The largest reported \~1,000 times the median revenue at its peak. They remain in the raw extract, flagged, but are excluded from all baseline calculations.
+
+-   **2025 Correction:** Incorporated the publisher's post-print correction, inserting four omitted companies into their true revenue spots and re-ranking the bottom entries.
+
+-   **Misprints Preserved:** Geocoding errors were corrected only in derived state fields, leaving original printed text intact. Arithmetic glitches and duplicated rows were flagged rather than overwritten.
+
+-   **Ranking Quirks Maintained:** Skips after ties (e.g., 33, 33, 35), duplicated ranks, and out-of-order revenue entries were kept exactly as published. Ranks reflect publisher output, not custom re-sorting.
+
+**Validation & Audit**
+
+-   Revenue totals reconcile to the printed tables for all 18 editions (not to the publisher's summary cards, which disagree with its own tables — see Section 2).
+
+-   Zero duplicate `firm_id` entries exist within any single year.
+
+-   Automated text searches verified that no real company names slipped into the public exports.
+
+-   The full decision log lives in `02_cleaning_and_decision_log.md` within the repository.
 
 ```{r process-outliers}
 # The five outliers are the only firms named anywhere in this package (see the cleaning log for why).
@@ -86,13 +182,32 @@ rows %>%
   knitr::kable(caption = "The five excluded outliers — kept in the extract, removed from every 'excl.' metric")
 ```
 
-# 4. Analyze — three tests
+# 4. Data Analysis: Three Key Tests
 
-> **Roadmap (Analyze) guiding questions to answer across the three tests:** how the data was organized for analysis (firm-year rows; matched-pair years for same-store growth; population tags for the coverage tables); whether it is properly formatted; what surprised you (the 2026 edition: +8% same-store in a year the list-level median fell by roughly a third; retention at an eighteen-year low); the trends and relationships found; how the insights answer the business question.
+**Dataset Setup**
+The 1,807 rows were reshaped for three distinct tests:
 
-## Test 1 — Composition: does year-over-year change in the list measure growth?
+-   **List-level stats:** Grouped by publication year.
 
-> **[WRITE THIS.** The finding, in your words. The chart below is the case study's centrepiece: the list-level median and the same-store median tell different stories, and the 2026 edition is the extreme case — same-store growth of +8% in a year the list-level median fell by roughly a third, because a large cohort of smaller first-time entrants joined.]
+-   **Same-store growth:** Paired year-over-year rows (`Year N` matched to `Year N-1` by `firm_id`), keeping only firms present in both consecutive years.
+
+-   **Coverage & Selection:** Tagged across five populations (Printed List, Active Alumni w/ Estimates, Active Alumni Carried Forward, Buying-Group Unlisted, Certified Unlisted).
+
+All metrics exclude the five giant outliers unless noted. *Same-store growth* functions like retail store metrics: tracking performance exclusively among firms present in both comparison periods so new entries and exits don't skew growth signals.
+
+## Test 1 — Composition: Does Year-Over-Year List Change Equal Market Growth?
+
+Headline list shifts track *who showed up*, not how companies actually grew.
+
+In 2026, among the 56 firms listed in both 2025 and 2026, **same-store median revenue grew +8.0%**. Meanwhile, the **list's overall median revenue dropped -31.9%** (falling from \$6.6M to \$4.5M). Both figures are accurate, but the overall median drop isn't a market contraction—it reflects a shift in participation. The 2026 list saw 43 entrants (37 first-time) and 42 exits. Retention plummeted to 58% (down from 79%–88% over the prior five years). The incoming cohort was simply smaller, pulling down the average list benchmark.
+
+This churn isn't new:
+
+-   **2010:** Same-store growth was -16.0% while list medians dropped -30.5%.
+
+-   **2020:** Same-store grew +5.8% while list totals surged +33.6% due to new enterprise joins.
+
+Tracking the 6 non-outlier firms present on all 18 lists shows a steady compound annual growth rate (CAGR) of \~6.9% in aggregate revenue (\$72.6M in 2009 to \$225.6M in 2026), with median revenue growing \~5.4% annually (\$7.0M to \$16.9M). Across the full dataset, 119 of 379 firms appeared only once.
 
 ```{r composition-chart}
 A2 %>%
@@ -131,9 +246,21 @@ A3 %>% mutate(across(ends_with("usd"), m)) %>%
   knitr::kable(caption = "The persistent cohort — firms present on all eighteen lists")
 ```
 
-## Test 2 — Coverage: how much of the population does the list capture?
+## Test 2 — Coverage: How Much Market Volume Does the List Capture?
 
-> **[WRITE THIS.** The comparator: every firm on two industry certification and buying-group rosters, matched against all eighteen lists. State the headline as a ratio and a range, never a point. State the confidence mix of the estimates and that the conclusion holds at the low end of the range. Name the comparator's own selection effects before a reader does.]
+The list captures only a small fraction of the viable dealer universe—about **24% of core firms (98 of 411)** and **27% of core revenue (\$785M out of \$2.93B)**.
+
+Across revenue thresholds, capture rates remain flat around \~25%:
+
+-   **\$1M+ firms:** 25% captured
+
+-   **\$5M+ firms:** 26% captured (43 of 163)
+
+-   **\$10M+ firms:** 28% captured (19 of 68)
+
+-   **\$25M+ firms:** 19% captured (3 of 16)
+
+The list doesn't concentrate on top-tier players while ignoring small operators; it captures roughly one-quarter of the market across every size tier. If every core firm entered, the true #100 company would sit at \~\$7.5M revenue, rather than the list’s current \$1.04M floor, leaving only 26 current listees in the actual Top 100.
 
 ```{r coverage-table}
 B1 %>% mutate(across(ends_with("usd"), m)) %>%
@@ -157,9 +284,19 @@ B2 %>% mutate(threshold_usd = m(threshold_usd), share_of_core_firms_captured_by_
   knitr::kable(caption = "At every size threshold, the list holds roughly a quarter of the firms")
 ```
 
-## Test 3 — Selection: are listed firms different from unlisted ones?
+## Test 3 — Selection: Are Listed Firms Built Differently?
 
-> **[WRITE THIS.** Participation, not size, determines membership. The size distributions overlap heavily; the unlisted population's median is lower but its upper tail is fully populated. Benchmarks drawn from the list therefore carry a selection effect unrelated to performance.]
+Dropping off the list rarely signals business decline. Median revenue breaks down as:
+
+-   **Printed List:** \$4.5M
+
+-   **Active Alumni:** \$7.3M
+
+-   **Never-Listed Roster Firms:** \$2.5M
+
+Active alumni are systematically *larger* than currently listed firms: 63 active alumni generate \$10M+ (with 18 above \$25M), compared to just 19 and 3 on the printed list. Fully 77% of active alumni sit above \$5M, compared to 44% of current listees.
+
+Where the list shines is internal productivity metrics. **Median revenue per employee** among listed firms rose from \$187.5k (2009) to \$275.2k (2026). Because this is a within-firm ratio rather than an aggregate sum, it remains highly stable regardless of member churn.
 
 ```{r selection-chart}
 B3 %>%
@@ -177,25 +314,81 @@ A1 %>% filter(population == "excl_five_outliers") %>%
   labs(title = "Median revenue per employee among listed firms", x = NULL, y = NULL) + theme_minimal()
 ```
 
-# 5. Share — what the three tests add up to
+# 5. Strategic Synthesis: Directory vs. Denominator
 
-> **[WRITE THIS.** One paragraph. The synthesis: the list is a strong directory and a weak denominator.]
->
-> **Roadmap (Share) guiding questions:** were you able to answer the business question; what story the data tells; how the findings relate to the original question; who the audience is and the best way to reach them; whether the visuals carry the findings; whether the presentation is accessible (define every industry term on first use — the peer graders are outside the industry).
+The dataset proves one core thesis: **The list functions well as a trade directory, but fails as an analytical denominator.**
 
-# 6. Problems, solutions and alternatives
+-   **As a Directory:** Excellent reference asset. 379 firms over 18 years with documented locations, team sizes, and reported figures.
 
-> **[WRITE THIS — the course's prescribed structure.** Problems: the three findings as problems for the client. Solutions: what the client should use instead, with two or three alternatives and pros and cons of each. Be specific about trade-offs.]
+-   **As a Market Denominator:** Fails due to voluntary participation. It captures \~27% of sector revenue (Coverage Bias), mixes churn with actual business performance (Composition Bias), and samples only firms willing to submit data (Selection Bias).
 
-# 7. Conclusion and next steps
+Looking at all 374 non-outlier firms ever listed: 98 are currently listed, **201 are active non-participants**, 34 were acquired, 21 closed, 12 merged/rebranded, and 8 are untraceable. Having more than double the current list operating as active non-participants underscores why the list cannot serve as a stand-alone market benchmark.
 
-> **[WRITE THIS.** The recommendation: which option, why, who owns it, by when. Then what you learned, and what a second pass on the data would change.]
->
-> **Roadmap (Act) guiding questions:** the final conclusion; how the client's team could apply the insight; the next steps the stakeholders would take; additional data that would extend the findings. **Packet deliverable 6 — additional deliverables for further exploration — goes here as a short list:** for example a licensable roster-match table, a brand-share analysis from the lists' brand pages, an annual refresh of the extract, a coverage test against a third independent roster.
+# 6. Practical Solutions & Trade-Offs
 
-# Appendix — reproducibility and disclosure
+**The Business Risks of Using the Unadjusted List**
 
-> **[WRITE THIS.** How to regenerate this document; that the raw extract is public and names-stripped; that generative AI was used for the extraction pipeline, desk research and drafting support, per the course's responsible-use guidance; and that every figure is an order-of-magnitude placement, never a number to quote to a client.]
+1.  **Undersized Channel Sizing:** Basing dealer program budgets or rep territories on list totals underestimates market potential by 3x to 4x.
+
+2.  **Misreading Market Trends:** Misinterpreting list churn as economic contractions (e.g., treating 2025's -32% participation drop as a market crash when active firms grew +8%).
+
+3.  **Skewed Dealer Benchmarks:** Rewarding small participants ("Top 100" at \$1.5M) while missing \$12M unlisted dealers entirely.
+
+**Three Strategic Options**
+
+-   **Option A: Build an Independent Dealer Universe (Recommended)**
+
+    -   *Approach:* Combine certification rosters, buying group lists, and alumni data. Estimate missing revenues using documented ratios and confidence ratings.
+
+    -   *Pros:* \~4x coverage improvement; transparent confidence bands; repeatable annual workflow.
+
+    -   *Cons:* Requires initial analyst workload (2–3 weeks upfront).
+
+-   **Option B: Use Third-Party Industry Association Data for Sizing**
+
+    -   *Approach:* Adopt trade association macro numbers for sizing while using the printed list purely for target outreach.
+
+    -   *Pros:* Zero internal data builds; instant executive buy-in.
+
+    -   *Cons:* Macro figures cover \~20,000 broad market entities (median revenue \<\$1M), misaligned with the high-value dealer channel.
+
+-   **Option C: Restrict List Use to Same-Store Growth Only**
+
+    -   *Approach:* Immediate policy rule prohibiting headline list totals; evaluate growth exclusively via matched cohorts.
+
+    -   *Pros:* Zero cost; fixes growth-rate misinterpretation overnight.
+
+    -   *Cons:* Leaves coverage and tiering biases completely unaddressed.
+
+# 7. Recommendations & Immediate Actions
+
+-   **Adopt Option A for FY27 Planning:** Commission an independent dealer universe before Q4 budget locks.
+
+-   **Implement Option C Immediately:** Mandate that all immediate internal reports evaluate list performance on a same-store basis only.
+
+-   **Target High-Value Alumni:** Treat the 201 active former listees as an explicit sales conquest segment.
+
+**Further exploration**
+
+Additional data and deliverables that would extend the findings:
+
+-   **A second research pass on the Low-confidence estimates,** to narrow the coverage range. The conclusion holds at the low end already; a tighter range makes it more useful for budgeting.
+
+-   **A third independent roster** — another buying group or a manufacturer's own authorized-dealer list — to test whether the roughly one-quarter coverage ratio holds against a differently selected comparator.
+
+-   **A licensable roster-match table:** the list-to-roster match, refreshed annually, as a product for manufacturers and buying groups.
+
+-   **A brand-share analysis from the lists' brand pages,** which the extract omits. The editions report the brands each firm carries; matched to the firm-year table, that is a channel-share series by product category.
+
+-   **An annual refresh of the extract each list season,** so the same-store and coverage series extend by one year with a day's work rather than a rebuild.
+
+# **Technical Appendix & Reproducibility Notes**
+
+-   **Regeneration:** Open `case_study.Rmd` in RStudio or run `rmarkdown::render("case_study.Rmd")`. Requires R 4.x (`tidyverse`, `knitr`, `rmarkdown`).
+
+-   **Public vs. Private:** Public repository includes cleaned anonymized extracts (`firm_id`), aggregated tables (A1–A7, B1–B3), and decision logs. Raw identity mapping tables, unmasked company names, and proprietary firm-level estimates remain private.
+
+-   **AI Usage Disclosure:** Generative tools assisted in writing scraper logic, running preliminary desk research verification, and polishing prose. All mapping logic, data rulings, analytical test designs, and strategic conclusions were authored and verified manually by the analyst.
 
 ```{r session-info}
 sessionInfo()

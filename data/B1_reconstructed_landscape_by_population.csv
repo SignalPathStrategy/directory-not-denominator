@@ -1,0 +1,8 @@
+population,firms,total_point_usd,total_low_usd,total_high_usd,median_point_usd
+2026 list (printed),98,784774544.93,784774544.93,784774544.93,4505709.0
+"Alumnus, projected or estimated",103,1336200000,1079080857,1396985632,7500000
+"Alumnus, stale carry-forward (speculative)",103,1028850000,486379852,1483200000,7150000
+"Buying-group member, never listed (estimate)",41,241800000,182100000,328900000,3550000
+"Certified/roster firm, never listed (estimate)",169,564250000,414500000,747550000,2300000
+ALL (pro forma ranking),514,3955874544.93,2946835253.93,4741410176.93,4900000.0
+CORE (excluding speculative carry-forwards),411,2927024544.93,2460455401.93,3258210176.93,4000000

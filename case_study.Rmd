@@ -1,0 +1,200 @@
+---
+title: "[YOUR TITLE — e.g. 'What an industry ranking can and cannot tell you: eighteen years of a top-100 list']"
+author: "Alex Jaremko"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 9, fig.height = 5)
+library(tidyverse)
+library(scales)
+# Every table and chart below regenerates from the CSVs in data/. Nothing reaches back into private files.
+rows  <- read_csv("data/cepro100_2009_2026_rows.csv")
+A1    <- read_csv("data/A1_list_level_stats_by_year.csv")
+A2    <- read_csv("data/A2_same_store_vs_list_level_growth.csv")
+A3    <- read_csv("data/A3_persistent_cohort_series.csv")
+A4    <- read_csv("data/A4_entry_exit_by_year.csv")
+A5    <- read_csv("data/A5_size_bands_by_year.csv")
+A6    <- read_csv("data/A6_years_on_list_distribution.csv")
+A7    <- read_csv("data/A7_status_of_every_firm_ever_listed.csv")
+B1    <- read_csv("data/B1_reconstructed_landscape_by_population.csv")
+B2    <- read_csv("data/B2_firms_above_size_thresholds.csv")
+B3    <- read_csv("data/B3_size_distribution_listed_vs_unlisted.csv")
+m <- function(x) dollar(x, scale = 1e-6, suffix = "M", accuracy = 0.1)
+```
+
+# 1. Introduction
+
+> **[WRITE THIS.** The scenario, in the course's framing: you are an analyst at a business-intelligence consultancy leading a project for a new client — a manufacturer deciding where to put its FY27 dealer-program dollars. The default input is the industry's published top-100 ranking. State the business task in one sentence, name the stakeholders, and state the assumption you are carrying: the list is treated as honest and competently produced, and every limitation found is structural, not an error.]
+>
+> **The packet's five guiding Ask questions — answer each explicitly (peer graders look for them):**
+>
+> 1. *What type of company does your client represent, and what are they asking you to accomplish?* — A smart home technology manufacturer selling through a dealer network, planning FY27 dealer-program spend; asking whether the published top-100 ranking is a sound basis for sizing the channel and targeting that spend, and what to use if not.
+> 2. *What are the key factors involved in the business task?* — Coverage, composition and selection; the mechanism behind all three is voluntary, self-reported participation.
+> 3. *What type of data will be appropriate?* — Eighteen years of the ranking as a firm-year table; an independent roster of channel firms as the comparator.
+> 4. *Where will you obtain that data?* — Compiled from the publicly published annual lists (extracted, cleaned, documented, and republished names-stripped); the comparator from two published industry rosters.
+> 5. *Who is your audience, and what materials will help you present to them effectively?* — Manufacturer channel and sales leadership first; buying-group leadership and trade press second. This document, the public extract, the cleaning log, and a short deck.
+>
+> **Roadmap (Ask) guiding questions to cover in passing:** topic; problem; metrics (same-store vs list-level growth, list share of reconstructed population firms and dollars, size-distribution overlap); stakeholders; audience; how the insight changes the client's decision.
+
+# 2. Prepare — the data and where it came from
+
+> **[WRITE THIS.** Provenance in your words. Point the reader to `02_cleaning_and_decision_log.md` for the full log. State plainly that company names are stripped and why. Say what the comparator rosters are and that they have selection effects of their own. Address the "compiled, not downloaded" point head-on: the dataset was built from publicly published lists, the build is documented, and publishing the extract makes it a public dataset.]
+>
+> **Roadmap (Prepare) guiding questions:** where the data is located; how it is organized (one row per firm per list year); bias and credibility — does it ROCCC (Reliable, Original, Comprehensive, Current, Cited)? — answer honestly: original and current yes, comprehensive no (voluntary participation is the whole point), reliable within the publisher's own verification, cited to the source; licensing, privacy, security and accessibility (published facts, names stripped, nominative use of the list's name); how integrity was verified (totals reconcile to the printed lists; cross-year identity checks); problems with the data (misprints kept as printed, ties, a corrected edition, non-monotonic ranks).
+
+```{r prepare-overview}
+rows %>%
+  group_by(list_year) %>%
+  summarise(firms = n(), with_revenue = sum(!is.na(revenue_usd)), with_employees = sum(!is.na(employees)),
+            with_rmr = sum(!is.na(pct_rmr)), with_outlook = sum(!is.na(business_outlook))) %>%
+  knitr::kable(caption = "Rows and field availability by list year")
+```
+
+# 3. Process — cleaning, identity resolution and rulings
+
+> **[WRITE THIS.** Two or three paragraphs summarising the log: extraction from eighteen PDFs, normalisation, the ~60 aliases and 18 merges that collapse 397 apparent firms to 379, the five-outlier exclusion, the applied 2025 correction, and the decision to keep misprints and ties as printed. This is the section most portfolio case studies skip. Do not skip it.]
+>
+> **Roadmap (Process) guiding questions:** tools chosen and why (Python for extraction and identity resolution, R Markdown for the reproducible analysis, a spreadsheet for review); how integrity was ensured; the cleaning steps; how you verify the data is clean (the table below reproduces the row counts; the extract reconciles to the printed totals); where the cleaning process is documented.
+
+```{r process-outliers}
+# The five outliers are the only firms named anywhere in this package (see the cleaning log for why).
+outlier_names <- tribble(
+  ~firm_id, ~company,                    ~what_it_is,
+  "F0131",  "ADT",                       "National security and smart-home service provider",
+  "F0135",  "Vivint",                    "National security and smart-home service provider",
+  "F0001",  "Guardian Protection",       "Regional security company",
+  "F0269",  "CCS Presentation Systems",  "Commercial-AV integrator",
+  "F0153",  "Best Buy",                  "Consumer-electronics retailer's custom-installation line"
+)
+rows %>%
+  filter(outlier_excluded_from_excl_metrics == "Y") %>%
+  group_by(firm_id) %>%
+  summarise(years_on_list = n(), peak_revenue = max(revenue_usd, na.rm = TRUE)) %>%
+  left_join(outlier_names, by = "firm_id") %>%
+  arrange(desc(peak_revenue)) %>%
+  mutate(peak_revenue = m(peak_revenue)) %>%
+  select(firm_id, company, what_it_is, years_on_list, peak_revenue) %>%
+  knitr::kable(caption = "The five excluded outliers — kept in the extract, removed from every 'excl.' metric")
+```
+
+# 4. Analyze — three tests
+
+> **Roadmap (Analyze) guiding questions to answer across the three tests:** how the data was organized for analysis (firm-year rows; matched-pair years for same-store growth; population tags for the coverage tables); whether it is properly formatted; what surprised you (the 2026 edition: +8% same-store in a year the list-level median fell by roughly a third; retention at an eighteen-year low); the trends and relationships found; how the insights answer the business question.
+
+## Test 1 — Composition: does year-over-year change in the list measure growth?
+
+> **[WRITE THIS.** The finding, in your words. The chart below is the case study's centrepiece: the list-level median and the same-store median tell different stories, and the 2026 edition is the extreme case — same-store growth of +8% in a year the list-level median fell by roughly a third, because a large cohort of smaller first-time entrants joined.]
+
+```{r composition-chart}
+A2 %>%
+  select(list_year, `Same-store (matched firms)` = same_store_median_growth, `List-level (median to median)` = list_level_median_change) %>%
+  pivot_longer(-list_year, names_to = "series", values_to = "growth") %>%
+  ggplot(aes(list_year, growth, colour = series)) +
+  geom_hline(yintercept = 0, colour = "grey60") +
+  geom_line(linewidth = 1) + geom_point() +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = 2010:2026) +
+  labs(title = "Two ways to read 'growth' from the same list", subtitle = "Median revenue change, excluding the five outliers",
+       x = "List year (fiscal year is one earlier)", y = NULL, colour = NULL) +
+  theme_minimal() + theme(legend.position = "top")
+```
+
+```{r composition-table}
+A2 %>%
+  transmute(list_year, matched_firms, `same-store median` = percent(same_store_median_growth, 0.1),
+            `same-store total` = percent(same_store_total_growth, 0.1), `list-level median` = percent(list_level_median_change, 0.1),
+            `list-level total` = percent(list_level_total_change, 0.1)) %>%
+  knitr::kable(caption = "Same-store versus list-level growth, by list year")
+```
+
+```{r turnover-chart}
+A4 %>% filter(!is.na(new_entrants)) %>%
+  select(list_year, `New entrants` = new_entrants, Exits = exits) %>%
+  pivot_longer(-list_year) %>%
+  ggplot(aes(list_year, value, fill = name)) + geom_col(position = "dodge") +
+  scale_x_continuous(breaks = 2010:2026) +
+  labs(title = "Who showed up: entries and exits each year", x = NULL, y = "Firms", fill = NULL) +
+  theme_minimal() + theme(legend.position = "top")
+```
+
+```{r persistent-cohort}
+A3 %>% mutate(across(ends_with("usd"), m)) %>%
+  knitr::kable(caption = "The persistent cohort — firms present on all eighteen lists")
+```
+
+## Test 2 — Coverage: how much of the population does the list capture?
+
+> **[WRITE THIS.** The comparator: every firm on two industry certification and buying-group rosters, matched against all eighteen lists. State the headline as a ratio and a range, never a point. State the confidence mix of the estimates and that the conclusion holds at the low end of the range. Name the comparator's own selection effects before a reader does.]
+
+```{r coverage-table}
+B1 %>% mutate(across(ends_with("usd"), m)) %>%
+  knitr::kable(caption = "The reconstructed landscape by population (point estimates with low/high range)")
+```
+
+```{r coverage-chart}
+B1 %>% filter(!population %in% c("ALL (pro forma ranking)", "CORE (excluding speculative carry-forwards)")) %>%
+  mutate(population = fct_reorder(population, total_point_usd)) %>%
+  ggplot(aes(population, total_point_usd)) +
+  geom_col(fill = "steelblue") +
+  geom_errorbar(aes(ymin = total_low_usd, ymax = total_high_usd), width = 0.25) +
+  coord_flip() + scale_y_continuous(labels = m) +
+  labs(title = "Where the revenue actually sits", subtitle = "The printed list is one of five populations",
+       x = NULL, y = "Fiscal-2025 revenue (point estimate; bar = low/high range)") +
+  theme_minimal()
+```
+
+```{r thresholds}
+B2 %>% mutate(threshold_usd = m(threshold_usd), share_of_core_firms_captured_by_list = percent(share_of_core_firms_captured_by_list, 1)) %>%
+  knitr::kable(caption = "At every size threshold, the list holds roughly a quarter of the firms")
+```
+
+## Test 3 — Selection: are listed firms different from unlisted ones?
+
+> **[WRITE THIS.** Participation, not size, determines membership. The size distributions overlap heavily; the unlisted population's median is lower but its upper tail is fully populated. Benchmarks drawn from the list therefore carry a selection effect unrelated to performance.]
+
+```{r selection-chart}
+B3 %>%
+  ggplot(aes(revenue_band, share, fill = population)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = percent_format(1)) +
+  labs(title = "Size distribution: listed versus unlisted firms", x = NULL, y = "Share of population", fill = NULL) +
+  theme_minimal() + theme(legend.position = "top", axis.text.x = element_text(angle = 20, hjust = 1))
+```
+
+```{r rev-per-employee}
+A1 %>% filter(population == "excl_five_outliers") %>%
+  ggplot(aes(list_year, median_rev_per_employee_usd)) + geom_line(linewidth = 1) + geom_point() +
+  scale_y_continuous(labels = dollar_format(scale = 1e-3, suffix = "K")) + scale_x_continuous(breaks = 2009:2026) +
+  labs(title = "Median revenue per employee among listed firms", x = NULL, y = NULL) + theme_minimal()
+```
+
+# 5. Share — what the three tests add up to
+
+> **[WRITE THIS.** One paragraph. The synthesis: the list is a strong directory and a weak denominator.]
+>
+> **Roadmap (Share) guiding questions:** were you able to answer the business question; what story the data tells; how the findings relate to the original question; who the audience is and the best way to reach them; whether the visuals carry the findings; whether the presentation is accessible (define every industry term on first use — the peer graders are outside the industry).
+
+# 6. Problems, solutions and alternatives
+
+> **[WRITE THIS — the course's prescribed structure.** Problems: the three findings as problems for the client. Solutions: what the client should use instead, with two or three alternatives and pros and cons of each. Be specific about trade-offs.]
+
+# 7. Conclusion and next steps
+
+> **[WRITE THIS.** The recommendation: which option, why, who owns it, by when. Then what you learned, and what a second pass on the data would change.]
+>
+> **Roadmap (Act) guiding questions:** the final conclusion; how the client's team could apply the insight; the next steps the stakeholders would take; additional data that would extend the findings. **Packet deliverable 6 — additional deliverables for further exploration — goes here as a short list:** for example a licensable roster-match table, a brand-share analysis from the lists' brand pages, an annual refresh of the extract, a coverage test against a third independent roster.
+
+# Appendix — reproducibility and disclosure
+
+> **[WRITE THIS.** How to regenerate this document; that the raw extract is public and names-stripped; that generative AI was used for the extraction pipeline, desk research and drafting support, per the course's responsible-use guidance; and that every figure is an order-of-magnitude placement, never a number to quote to a client.]
+
+```{r session-info}
+sessionInfo()
+```

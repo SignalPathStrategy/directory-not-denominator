@@ -16,7 +16,7 @@ library(tidyverse)
 library(scales)
 # Every table and chart below regenerates from the CSVs in data/. Nothing reaches back into private files.
 # On Kaggle the same files are attached as a dataset; everywhere else they sit in data/ beside this file.
-d <- if (dir.exists("/kaggle/input")) list.dirs("/kaggle/input", recursive = FALSE)[1] else "data"
+d <- if (dir.exists("/kaggle/input")) dirname(list.files("/kaggle/input", "cepro100_2009_2026_rows.csv", recursive = TRUE, full.names = TRUE)[1]) else "data"
 rows  <- read_csv(file.path(d, "cepro100_2009_2026_rows.csv"))
 A1    <- read_csv(file.path(d, "A1_list_level_stats_by_year.csv"))
 A2    <- read_csv(file.path(d, "A2_same_store_vs_list_level_growth.csv"))
